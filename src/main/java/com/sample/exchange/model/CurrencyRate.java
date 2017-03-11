@@ -1,5 +1,6 @@
 package com.sample.exchange.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sample.exchange.util.LocalDateSerializer;
 
@@ -16,6 +17,7 @@ public class CurrencyRate {
 
     @Id
     @GeneratedValue
+    @JsonIgnore
     private Long id;
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate day;
