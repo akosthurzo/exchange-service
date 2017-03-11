@@ -1,6 +1,6 @@
 package com.sample.exchange.model.ecb;
 
-import com.sample.exchange.adapter.LocalDateAdapter;
+import com.sample.exchange.util.LocalDateAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
