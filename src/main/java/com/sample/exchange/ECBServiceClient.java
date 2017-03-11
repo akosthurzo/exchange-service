@@ -3,8 +3,10 @@ package com.sample.exchange;
 import com.sample.exchange.model.ecb.CurrencyRate;
 import com.sample.exchange.model.ecb.DailyCurrencyRates;
 import com.sample.exchange.model.ecb.Envelope;
+import com.sample.exchange.repository.CurrencyRateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,9 @@ import java.time.format.DateTimeFormatter;
  */
 @Component
 public class ECBServiceClient {
+
+    @Autowired
+    private CurrencyRateRepository currencyRateRepository;
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -40,7 +45,9 @@ public class ECBServiceClient {
             log.debug(dailyCurrencyRates.getDay().format(DateTimeFormatter.ISO_LOCAL_DATE));
 
             for (CurrencyRate currencyRate : dailyCurrencyRates.getCurrencyRates()) {
-                log.debug(currencyRate.getCurrency() + "=" + currencyRate.getRate());
+                currencyRateRepository.save(
+                    new com.sample.exchange.model.CurrencyRate(
+                        dailyCurrencyRates.getDay(), currencyRate.getCurrency(), currencyRate.getRate()));
             }
         }
     }
