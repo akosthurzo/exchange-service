@@ -13,7 +13,7 @@ public interface CurrencyRateRepository extends PagingAndSortingRepository<Curre
 
     public List<CurrencyRate> findByCurrency(String currency);
 
-    public List<CurrencyRate> findByDay(LocalDate day);
+    public List<CurrencyRate> findByDate(LocalDate date);
 
-    public List<CurrencyRate> findByDayAndCurrency(LocalDate day, String currency);
+    public List<CurrencyRate> findByDateAndCurrency(LocalDate date, String currency);
 }

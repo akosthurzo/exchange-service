@@ -23,17 +23,17 @@ public class CurrencyRateRestController {
 
     @RequestMapping("/currencyRates")
     public Iterable<CurrencyRate> findAll(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                          @RequestParam(value = "day") Optional<LocalDate> day,
+                                          @RequestParam(value = "date") Optional<LocalDate> date,
                                           @RequestParam(value = "currency") Optional<String> currency) {
 
-        if (day.isPresent() && currency.isPresent())
-            return currencyRateRepository.findByDayAndCurrency(day.get(), currency.get());
+        if (date.isPresent() && currency.isPresent())
+            return currencyRateRepository.findByDateAndCurrency(date.get(), currency.get());
 
-        if (!day.isPresent() && !currency.isPresent())
+        if (!date.isPresent() && !currency.isPresent())
             return currencyRateRepository.findAll();
 
-        if (day.isPresent())
-            return currencyRateRepository.findByDay(day.get());
+        if (date.isPresent())
+            return currencyRateRepository.findByDate(date.get());
 
         return currencyRateRepository.findByCurrency(currency.get());
     }

@@ -20,15 +20,15 @@ public class CurrencyRate {
     @JsonIgnore
     private Long id;
     @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate day;
+    private LocalDate date;
     private String currency;
     private Double rate;
 
     public CurrencyRate() {
     }
 
-    public CurrencyRate(LocalDate day, String currency, Double rate) {
-        this.day = day;
+    public CurrencyRate(LocalDate date, String currency, Double rate) {
+        this.date = date;
         this.currency = currency;
         this.rate = rate;
     }
@@ -41,12 +41,12 @@ public class CurrencyRate {
         this.id = id;
     }
 
-    public LocalDate getDay() {
-        return day;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public void setDay(LocalDate day) {
-        this.day = day;
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public String getCurrency() {

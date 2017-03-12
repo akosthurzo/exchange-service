@@ -65,10 +65,10 @@ public class CurrencyRateRestControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void getCurrencyRateByDay() throws Exception {
+    public void getCurrencyRateByDate() throws Exception {
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
-        mockMvc.perform(get("/api/currencyRates?day=" + yesterday.format(DateTimeFormatter.ISO_LOCAL_DATE)))
+        mockMvc.perform(get("/api/currencyRates?date=" + yesterday.format(DateTimeFormatter.ISO_LOCAL_DATE)))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$", hasSize(1)))
                .andExpect(jsonPath("$[0].currency", is(currencyRates.get(1).getCurrency())))
@@ -76,11 +76,11 @@ public class CurrencyRateRestControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void getCurrencyRateByDayAndCurrency() throws Exception {
+    public void getCurrencyRateByDateAndCurrency() throws Exception {
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
         mockMvc.perform(
-                   get("/api/currencyRates?currency=OWN2&day=" + yesterday.format(DateTimeFormatter.ISO_LOCAL_DATE)))
+                   get("/api/currencyRates?currency=OWN2&date=" + yesterday.format(DateTimeFormatter.ISO_LOCAL_DATE)))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$", hasSize(1)))
                .andExpect(jsonPath("$[0].currency", is(currencyRates.get(1).getCurrency())))

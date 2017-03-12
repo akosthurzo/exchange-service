@@ -20,16 +20,16 @@ public class DailyCurrencyRates {
 
     @XmlAttribute(name = "time")
     @XmlJavaTypeAdapter(LocalDateAdapter.class)
-    private LocalDate day;
+    private LocalDate date;
     @XmlElement(name = "Cube")
     private List<CurrencyRate> currencyRates;
 
-    public LocalDate getDay() {
-        return day;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public void setDay(LocalDate day) {
-        this.day = day;
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public List<CurrencyRate> getCurrencyRates() {

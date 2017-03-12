@@ -16,7 +16,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -50,12 +49,12 @@ public class ECBServiceClient {
         Envelope envelope = (Envelope) unmarshaller.unmarshal(new URL(url));
 
         for (DailyCurrencyRates dailyCurrencyRates : envelope.getCurrencyRatesWrapper().getDailyCurrencyRates()) {
-            log.debug(dailyCurrencyRates.getDay().format(DateTimeFormatter.ISO_LOCAL_DATE));
+            log.debug(dailyCurrencyRates.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE));
 
             for (CurrencyRate currencyRate : dailyCurrencyRates.getCurrencyRates()) {
                 currencyRateRepository.save(
                     new com.sample.exchange.model.CurrencyRate(
-                        dailyCurrencyRates.getDay(), currencyRate.getCurrency(), currencyRate.getRate()));
+                        dailyCurrencyRates.getDate(), currencyRate.getCurrency(), currencyRate.getRate()));
             }
         }
     }
