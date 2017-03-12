@@ -17,6 +17,7 @@ import javax.xml.bind.Unmarshaller;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * @author Akos Thurzo
@@ -34,7 +35,7 @@ public class ECBServiceClient {
         load("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml");
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(initialDelay = 60000, fixedRate = 60000)
     public void scheduled() throws JAXBException, MalformedURLException {
         log.debug("Scheduled method called!");
 
@@ -52,9 +53,14 @@ public class ECBServiceClient {
             log.debug(dailyCurrencyRates.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE));
 
             for (CurrencyRate currencyRate : dailyCurrencyRates.getCurrencyRates()) {
-                currencyRateRepository.save(
-                    new com.sample.exchange.model.CurrencyRate(
-                        dailyCurrencyRates.getDate(), currencyRate.getCurrency(), currencyRate.getRate()));
+                List<com.sample.exchange.model.CurrencyRate> currencyRateList =
+                    currencyRateRepository.findByDateAndCurrency(
+                        dailyCurrencyRates.getDate(), currencyRate.getCurrency());
+
+                if (currencyRateList == null || (currencyRateList != null && currencyRateList.isEmpty()))
+                    currencyRateRepository.save(
+                        new com.sample.exchange.model.CurrencyRate(
+                            dailyCurrencyRates.getDate(), currencyRate.getCurrency(), currencyRate.getRate()));
             }
         }
     }
