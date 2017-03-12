@@ -42,7 +42,7 @@ public class CurrencyRateRestController {
             ret = currencyRateRepository.findByCurrency(currency.get());
 
         if (ret.iterator().hasNext())
-            return new ResponseEntity<Iterable<CurrencyRate>>(ret, HttpStatus.OK);
+            return new ResponseEntity<>(ret, HttpStatus.OK);
 
         return ResponseEntity.notFound().build();
     }
