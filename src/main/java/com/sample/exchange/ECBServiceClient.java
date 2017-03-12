@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -29,17 +30,24 @@ public class ECBServiceClient {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+    @PostConstruct
+    private void init() throws JAXBException, MalformedURLException {
+        load("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml");
+    }
+
     @Scheduled(fixedRate = 60000)
-    public void getECBData() throws JAXBException, MalformedURLException {
+    public void scheduled() throws JAXBException, MalformedURLException {
         log.debug("Scheduled method called!");
 
+        load("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
+    }
+
+    public void load(String url) throws JAXBException, MalformedURLException {
         JAXBContext jaxbContext = JAXBContext.newInstance(Envelope.class);
 
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
-        URL url = new URL("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml");
-
-        Envelope envelope = (Envelope) unmarshaller.unmarshal(url);
+        Envelope envelope = (Envelope) unmarshaller.unmarshal(new URL(url));
 
         for (DailyCurrencyRates dailyCurrencyRates : envelope.getCurrencyRatesWrapper().getDailyCurrencyRates()) {
             log.debug(dailyCurrencyRates.getDay().format(DateTimeFormatter.ISO_LOCAL_DATE));
