@@ -7,6 +7,7 @@ import com.sample.exchange.repository.CurrencyRateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
@@ -37,16 +38,22 @@ public class ECBServiceClient {
     @Autowired
     private CurrencyRateRepository currencyRateRepository;
 
+    @Value("${com.sample.exchange.load.history.url}")
+    private String historyUrl;
+
+    @Value("${com.sample.exchange.load.daily.url}")
+    private String dailyUrl;
+
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @PostConstruct
     private void init() throws JAXBException, MalformedURLException {
-        load("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml");
+        load(historyUrl);
 
         initialized = true;
     }
 
-    @Scheduled(initialDelay = 60000, cron = "0 3 * * *") // every weekday at 03:00:00 UTC
+    @Scheduled(cron = "${com.sample.exchange.load.cron.schedule}")
     public void scheduled() {
         log.debug("Scheduled method called!");
 
@@ -54,7 +61,7 @@ public class ECBServiceClient {
             if (!initialized)
                 init();
             else
-                load("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
+                load(dailyUrl);
         } catch (Exception e) {
             log.error("Error while loading ECB data", e);
 
