@@ -35,7 +35,7 @@ public class ECBServiceClient {
         load("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml");
     }
 
-    @Scheduled(initialDelay = 60000, fixedRate = 60000)
+    @Scheduled(initialDelay = 60000, cron = "0 3 * * *") // every weekday at 03:00:00 UTC
     public void scheduled() throws JAXBException, MalformedURLException {
         log.debug("Scheduled method called!");
 
