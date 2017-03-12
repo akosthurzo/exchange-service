@@ -7,7 +7,9 @@ import com.sample.exchange.repository.CurrencyRateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -16,8 +18,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * @author Akos Thurzo
@@ -36,10 +43,26 @@ public class ECBServiceClient {
     }
 
     @Scheduled(initialDelay = 60000, cron = "0 3 * * *") // every weekday at 03:00:00 UTC
-    public void scheduled() throws JAXBException, MalformedURLException {
+    public void scheduled() {
         log.debug("Scheduled method called!");
 
-        load("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
+        try {
+            if (currencyRateRepository.count() == 0)
+                init();
+            else
+                load("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
+        } catch (Exception e) {
+            log.error("Error while loading ECB data", e);
+
+            ScheduledExecutorService localExecutor = Executors.newSingleThreadScheduledExecutor();
+
+            TaskScheduler scheduler = new ConcurrentTaskScheduler(localExecutor);
+
+            scheduler.schedule(
+                () -> scheduled(),
+                Date.from(LocalDateTime.now().plusMinutes(5).atZone(ZoneId.systemDefault()).toInstant())
+            );
+        }
     }
 
     public void load(String url) throws JAXBException, MalformedURLException {
