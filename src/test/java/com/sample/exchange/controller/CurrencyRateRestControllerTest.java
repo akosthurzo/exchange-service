@@ -59,9 +59,9 @@ public class CurrencyRateRestControllerTest extends BaseIntegrationTest {
     public void getCurrencyRateByCurrency() throws Exception {
         mockMvc.perform(get("/api/currencyRates?currency=OWN2"))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$", hasSize(1)))
-               .andExpect(jsonPath("$[0].currency", is(currencyRates.get(1).getCurrency())))
-               .andExpect(jsonPath("$[0].rate", is(currencyRates.get(1).getRate())));
+               .andExpect(jsonPath("$.content", hasSize(1)))
+               .andExpect(jsonPath("$.content[0].currency", is(currencyRates.get(1).getCurrency())))
+               .andExpect(jsonPath("$.content[0].rate", is(currencyRates.get(1).getRate())));
     }
 
     @Test
@@ -70,9 +70,9 @@ public class CurrencyRateRestControllerTest extends BaseIntegrationTest {
 
         mockMvc.perform(get("/api/currencyRates?date=" + yesterday.format(DateTimeFormatter.ISO_LOCAL_DATE)))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$", hasSize(1)))
-               .andExpect(jsonPath("$[0].currency", is(currencyRates.get(1).getCurrency())))
-               .andExpect(jsonPath("$[0].rate", is(currencyRates.get(1).getRate())));
+               .andExpect(jsonPath("$.content", hasSize(1)))
+               .andExpect(jsonPath("$.content[0].currency", is(currencyRates.get(1).getCurrency())))
+               .andExpect(jsonPath("$.content[0].rate", is(currencyRates.get(1).getRate())));
     }
 
     @Test
@@ -82,21 +82,21 @@ public class CurrencyRateRestControllerTest extends BaseIntegrationTest {
         mockMvc.perform(
                    get("/api/currencyRates?currency=OWN2&date=" + yesterday.format(DateTimeFormatter.ISO_LOCAL_DATE)))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$", hasSize(1)))
-               .andExpect(jsonPath("$[0].currency", is(currencyRates.get(1).getCurrency())))
-               .andExpect(jsonPath("$[0].rate", is(currencyRates.get(1).getRate())));
+               .andExpect(jsonPath("$.content", hasSize(1)))
+               .andExpect(jsonPath("$.content[0].currency", is(currencyRates.get(1).getCurrency())))
+               .andExpect(jsonPath("$.content[0].rate", is(currencyRates.get(1).getRate())));
     }
 
     @Test
     public void getCurrencyRates() throws Exception {
         mockMvc.perform(get("/api/currencyRates"))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$", hasSize(2)))
+               .andExpect(jsonPath("$.content", hasSize(2)))
                .andExpect(
-                   jsonPath("$[0].currency",
+                   jsonPath("$.content[0].currency",
                    isIn(currencyRates.stream().map(CurrencyRate::getCurrency).collect(Collectors.toList()))))
                .andExpect(
-                   jsonPath("$[0].rate",
+                   jsonPath("$.content[0].rate",
                    isIn(currencyRates.stream().map(CurrencyRate::getRate).collect(Collectors.toList()))));
     }
 }
