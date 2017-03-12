@@ -44,13 +44,22 @@ public class ECBServiceClient {
     @Value("${com.sample.exchange.load.daily.url}")
     private String dailyUrl;
 
+    @Value("${com.sample.exchange.load.retry.on.error}")
+    private long retrySeconds;
+
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @PostConstruct
-    private void init() throws JAXBException, MalformedURLException {
-        load(historyUrl);
+    private void init() {
+        try {
+            load(historyUrl);
 
-        initialized = true;
+            initialized = true;
+        } catch (Exception e) {
+            log.error("Error during initial data load", e);
+
+            schedule();
+        }
     }
 
     @Scheduled(cron = "${com.sample.exchange.load.cron.schedule}")
@@ -58,22 +67,33 @@ public class ECBServiceClient {
         log.debug("Scheduled method called!");
 
         try {
-            if (!initialized)
+            if (!initialized) {
                 init();
-            else
+            } else {
                 load(dailyUrl);
+            }
         } catch (Exception e) {
             log.error("Error while loading ECB data", e);
 
-            ScheduledExecutorService localExecutor = Executors.newSingleThreadScheduledExecutor();
+            schedule();
 
-            TaskScheduler scheduler = new ConcurrentTaskScheduler(localExecutor);
-
-            scheduler.schedule(
-                () -> scheduled(),
-                Date.from(LocalDateTime.now().plusMinutes(5).atZone(ZoneId.systemDefault()).toInstant())
-            );
+            throw new RuntimeException(e);
         }
+    }
+
+    public void schedule() {
+        ScheduledExecutorService localExecutor = Executors.newSingleThreadScheduledExecutor();
+
+        TaskScheduler scheduler = new ConcurrentTaskScheduler(localExecutor);
+
+        LocalDateTime localDateTime = LocalDateTime.now().plusSeconds(retrySeconds);
+
+        scheduler.schedule(
+            () -> scheduled(),
+            Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
+        );
+
+        log.debug("Load process scheduled to be run at " + localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     }
 
     public void load(String url) throws JAXBException, MalformedURLException {
