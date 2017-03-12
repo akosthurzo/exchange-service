@@ -84,7 +84,7 @@ public class ECBServiceClient {
         Envelope envelope = (Envelope) unmarshaller.unmarshal(new URL(url));
 
         for (DailyCurrencyRates dailyCurrencyRates : envelope.getCurrencyRatesWrapper().getDailyCurrencyRates()) {
-            log.debug(dailyCurrencyRates.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE));
+            log.debug("Loading data for " + dailyCurrencyRates.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE));
 
             for (CurrencyRate currencyRate : dailyCurrencyRates.getCurrencyRates()) {
                 List<com.sample.exchange.model.CurrencyRate> currencyRateList =
