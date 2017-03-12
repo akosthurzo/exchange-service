@@ -32,6 +32,8 @@ import java.util.concurrent.ScheduledExecutorService;
 @Component
 public class ECBServiceClient {
 
+    private static boolean initialized = false;
+
     @Autowired
     private CurrencyRateRepository currencyRateRepository;
 
@@ -40,6 +42,8 @@ public class ECBServiceClient {
     @PostConstruct
     private void init() throws JAXBException, MalformedURLException {
         load("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml");
+
+        initialized = true;
     }
 
     @Scheduled(initialDelay = 60000, cron = "0 3 * * *") // every weekday at 03:00:00 UTC
@@ -47,7 +51,7 @@ public class ECBServiceClient {
         log.debug("Scheduled method called!");
 
         try {
-            if (currencyRateRepository.count() == 0)
+            if (!initialized)
                 init();
             else
                 load("http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
